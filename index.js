@@ -2,14 +2,14 @@ const { ApolloServer, gql } = require("apollo-server");
 const mongoose = require("mongoose");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers/index");
-
+const { DB_CONNECTION_STRING } = require("./config");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => ({ req }),
 });
-const url = "mongodb://localhost:27017/merng-social-media-app";
 mongoose
-  .connect(url, {
+  .connect(DB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
