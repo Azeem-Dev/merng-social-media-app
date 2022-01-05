@@ -1,5 +1,4 @@
 const { AuthenticationError, UserInputError } = require("apollo-server");
-const { argsToArgsConfig } = require("graphql/type/definition");
 const Post = require("../../models/post/Post");
 const checkAuth = require("../../utils/check-auth");
 module.exports = {
