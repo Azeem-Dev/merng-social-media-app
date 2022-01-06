@@ -1,4 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
+import { Row, Col } from "antd";
+import PostCard from "../components/PostCard/PostCard";
 const Home = () => {
   const { loading, data } = useQuery(FETCH_POSTS_QUERY);
   let Posts = [];
@@ -7,11 +9,13 @@ const Home = () => {
   }
   return (
     <div>
-      {Posts?.map((post) => (
-        <div key={post.id}>
-          <h1>{post.body}</h1>
-        </div>
-      ))}
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{flexWrap:"wrap"}}>
+        {Posts?.map((post) => (
+          <Col className="gutter-row" span={8} key={post.id}>
+            <PostCard post={post} />
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 };
