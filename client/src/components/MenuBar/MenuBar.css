@@ -33,7 +33,7 @@ a {
 }
 @media (max-width: 768px) {
   .navbar,
-.navbar > .container {
+  .navbar > .container {
     display: block;
   }
 }
@@ -135,7 +135,7 @@ a {
   .navbar .navbar-menu .navbar-nav {
     width: 100%;
     display: block;
-    border-top: 1px solid #EEE;
+    border-top: 1px solid #eee;
     margin-top: 1rem;
   }
 }
@@ -146,7 +146,7 @@ a {
   padding: 0.5rem 1rem;
 }
 .navbar .navbar-menu .navbar-nav > li > a:hover {
-  color: #66f;
+  color: #1890ff;
 }
 @media (max-width: 768px) {
   .navbar .navbar-menu .navbar-nav > li > a {
@@ -154,7 +154,7 @@ a {
   }
 }
 .navbar .navbar-menu .navbar-nav > li.active a {
-  color: #66f;
+  color: #1890ff;
 }
 .navbar .navbar-menu .navbar-nav .navbar-dropdown .dropdown {
   list-style: none;
@@ -198,7 +198,7 @@ a {
 }
 
 .navbar .navbar-header > a span {
-  color: #66f;
+  color: #1890ff;
 }
 
 .navbar .navbar-header h4 {
