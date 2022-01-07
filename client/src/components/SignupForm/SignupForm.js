@@ -24,10 +24,10 @@ const SignupForm = () => {
         setErrors(response.error.graphQLErrors[0].extensions.errors);
         return;
       }
-      localStorage.setItem(AUTH_TOKEN_KEY, response.data.login.token);
-      localStorage.setItem(USER_ID_KEY, response.data.login.id);
-      localStorage.setItem(USER_EMAIL_KEY, response.data.login.email);
-      localStorage.setItem(USER_NAME_KEY, response.data.login.username);
+      localStorage.setItem(AUTH_TOKEN_KEY, response.data.register.token);
+      localStorage.setItem(USER_ID_KEY, response.data.register.id);
+      localStorage.setItem(USER_EMAIL_KEY, response.data.register.email);
+      localStorage.setItem(USER_NAME_KEY, response.data.register.username);
       navigate("/");
     }
   }, [response]);

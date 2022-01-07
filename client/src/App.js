@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 // import "semantic-ui-css/semantic.min.css";
 import "./App.css";
 import MenuBar from "./components/MenuBar/MenuBar";
@@ -14,11 +19,19 @@ function App() {
         className="navbar below"
         style={{ border: "none", boxShadow: "none" }}
       >
-        <div className="container" style={{ position: "static" }}>
+        <div
+          className="container"
+          style={{
+            position: "static",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Routes>
             <Route exact path="/" element={<Home />} />
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/register" element={<Register />} />
+            <Route exact path="/logout" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>

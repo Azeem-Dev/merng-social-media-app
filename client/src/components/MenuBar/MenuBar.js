@@ -2,14 +2,24 @@ import { useState, useEffect } from "react";
 import "./MenuBar.css";
 import { NavLink, useLocation } from "react-router-dom";
 import useWindowDimensions from "../../utils/windowResizeHandler";
+import { getUserDataFromMemory } from "../../utils/getUserData";
 const MenuBar = () => {
+  const [user, setUser] = useState(undefined);
+
   const { height, width } = useWindowDimensions();
   const [flex, setFlex] = useState(width > 768 ? true : false);
+  let location = useLocation();
 
   useEffect(() => {
     setFlex(width > 768 ? true : false);
   }, [width]);
-  let location = useLocation();
+
+  useEffect(() => {
+    let userInfo = getUserDataFromMemory();
+    setUser(
+       userInfo 
+    );
+  }, [location]);
   const currentOpenedTab = location.pathname.split("/")[1];
   return (
     <nav className="navbar" style={{ marginBottom: "20px" }}>
@@ -40,12 +50,30 @@ const MenuBar = () => {
             <li className={currentOpenedTab === "" ? "active" : ""}>
               <NavLink to="/">Home</NavLink>
             </li>
-            <li className={currentOpenedTab === "login" ? "active" : ""}>
-              <NavLink to="/login">Login</NavLink>
-            </li>
-            <li className={currentOpenedTab === "register" ? "active" : ""}>
-              <NavLink to="/register">Register</NavLink>
-            </li>
+            {user?.id == null ? (
+              <>
+                <li className={currentOpenedTab === "login" ? "active" : ""}>
+                  <NavLink to="/login">Login</NavLink>
+                </li>
+                <li className={currentOpenedTab === "register" ? "active" : ""}>
+                  <NavLink to="/register">Register</NavLink>
+                </li>
+              </>
+            ) : (
+              <>
+                {" "}
+                <li className={currentOpenedTab === "login" ? "active" : ""}>
+                  <NavLink
+                    to="/logout"
+                    onClick={() => {
+                      localStorage.clear();
+                    }}
+                  >
+                    Logout
+                  </NavLink>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

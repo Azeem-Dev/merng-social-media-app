@@ -1,24 +1,42 @@
 import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Row, Col } from "antd";
+import { Row, Col, Button, Tooltip } from "antd";
+import { RocketTwoTone } from "@ant-design/icons";
 import PostCard from "../components/PostCard/PostCard";
 import { getUserDataFromMemory } from "../utils/getUserData";
 const Home = () => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(undefined);
+  // const [Posts, setPosts] = useState([]);
+  let Posts = [];
+  const { loading, data } = useQuery(FETCH_POSTS_QUERY);
+
   useEffect(() => {
     let userInfo = getUserDataFromMemory();
-    if (userInfo) {
+    if (userInfo != {} || userInfo != undefined) {
       setUser(userInfo);
-      console.log(userInfo);
     }
   }, []);
-  const { loading, data } = useQuery(FETCH_POSTS_QUERY);
-  let Posts = [];
+
   if (!loading) {
     Posts = data.getPosts;
   }
   return (
     <div>
+      {user?.id != null && user?.token != null && (
+        <div
+          style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+        >
+          <Tooltip title="Add Post" color={"#2db7f5"} key={"#2db7f5"}>
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<RocketTwoTone style={{ fontSize: "32px" }} />}
+              size={"large"}
+            />
+          </Tooltip>
+        </div>
+      )}
+
       <Row
         gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
         style={{ flexWrap: "wrap" }}
@@ -42,6 +60,7 @@ const FETCH_POSTS_QUERY = gql`
       username
       likeCount
       likes {
+        id
         username
       }
       commentCount
