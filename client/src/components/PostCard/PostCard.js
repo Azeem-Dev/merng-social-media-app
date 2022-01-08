@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { Skeleton, Card, Avatar, Tooltip, Divider, Input, Button } from "antd";
+import { Skeleton, Card, Avatar, Tooltip, Divider, Button } from "antd";
 import {
   CommentOutlined,
   LikeOutlined,
@@ -24,7 +24,10 @@ const PostCard = ({ post }) => {
   const [AddComment, setAddComment] = useState(false);
   const [user, setUser] = useState(undefined);
   const [allComments, setAllComments] = useState(undefined);
-  const [PostComment, response] = useMutation(POST_COMMENT);
+  const [PostComment, response] = useMutation(POST_COMMENT, {
+    // Then re-run
+    refetchQueries: [{ query: FETCH_POSTS_QUERY }],
+  });
 
   const handleOnEnter = (text) => {
     if (text == "") {
@@ -129,9 +132,41 @@ const PostCard = ({ post }) => {
       <Skeleton avatar active loading={false}>
         <Meta
           avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-          title={post.body.slice(0, 20) + "..."}
+          title={
+            post.body.length > 20 ? post.body.slice(0, 20) + "..." : post.body
+          }
           description={post.body}
         />
+        <Divider
+          style={{
+            fontSize: "16px",
+            fontWeight: "200",
+            color: "#1890ff",
+          }}
+        >
+          By
+        </Divider>
+        <p
+          style={{
+            marginTop: "20px",
+            color: "#CBD4C2",
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {post.username}
+        </p>
+        <Divider
+          style={{
+            fontSize: "16px",
+            fontWeight: "200",
+            color: "#1890ff",
+          }}
+        >
+          Posted@
+        </Divider>
         <p
           style={{
             marginTop: "20px",
@@ -143,6 +178,27 @@ const PostCard = ({ post }) => {
           }}
         >
           {moment(post.createdAt).fromNow()}
+        </p>
+        <Divider
+          style={{
+            fontSize: "16px",
+            fontWeight: "200",
+            color: "#1890ff",
+          }}
+        >
+          Like & Comments
+        </Divider>
+        <p
+          style={{
+            marginTop: "20px",
+            color: "#CBD4C2",
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {post.likeCount} & {post.commentCount}
         </p>
         {showComment && (
           <>
@@ -230,7 +286,10 @@ const LikeIcon = ({ post }) => {
     setUser(getUserDataFromMemory());
   }, []);
 
-  const [LikePost, response] = useMutation(LIKE_POST);
+  const [LikePost, response] = useMutation(LIKE_POST, {
+    // Then re-run
+    refetchQueries: [{ query: FETCH_POSTS_QUERY }],
+  });
   // const [Post, setPost] = useState(post);
   const [liked, setLiked] = useState(false);
 
@@ -312,4 +371,29 @@ const POST_COMMENT = gql`
     }
   }
 `;
+const FETCH_POSTS_QUERY = gql`
+  {
+    getPosts {
+      id
+      body
+      createdAt
+      username
+      likeCount
+      likes {
+        id
+        username
+      }
+      commentCount
+      comments {
+        id
+        username
+        createdAt
+        body
+      }
+      likeCount
+      commentCount
+    }
+  }
+`;
+
 export default PostCard;

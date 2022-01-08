@@ -3,6 +3,7 @@ import "./MenuBar.css";
 import { NavLink, useLocation } from "react-router-dom";
 import useWindowDimensions from "../../utils/windowResizeHandler";
 import { getUserDataFromMemory } from "../../utils/getUserData";
+import { Avatar } from "antd";
 const MenuBar = () => {
   const [user, setUser] = useState(undefined);
 
@@ -16,9 +17,7 @@ const MenuBar = () => {
 
   useEffect(() => {
     let userInfo = getUserDataFromMemory();
-    setUser(
-       userInfo 
-    );
+    setUser(userInfo);
   }, [location]);
   const currentOpenedTab = location.pathname.split("/")[1];
   return (
@@ -72,6 +71,23 @@ const MenuBar = () => {
                     Logout
                   </NavLink>
                 </li>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Avatar src="https://joeschmoe.io/api/v1/random" />
+                  <p
+                    style={{
+                      color: "#CBD4C2",
+                      margin: "0",
+                    }}
+                  >
+                    {user.username}
+                  </p>
+                </div>
               </>
             )}
           </ul>

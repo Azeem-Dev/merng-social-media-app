@@ -1,18 +1,48 @@
 import { useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import EmojiTextarea from "react-emoji-textarea";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { Row, Col, Button, Tooltip, Modal, Input } from "antd";
-import { RocketTwoTone } from "@ant-design/icons";
+import { RocketTwoTone, HeartTwoTone } from "@ant-design/icons";
+import { Picker } from "emoji-mart";
+import "emoji-mart/css/emoji-mart.css";
 import PostCard from "../components/PostCard/PostCard";
 import { getUserDataFromMemory } from "../utils/getUserData";
+import { OpenErrorNotification } from "../components/Notification/Notification";
 const Home = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [PostBody, setPostBody] = useState("");
+  const [AddPost, response] = useMutation(ADD_POST, {
+    // Then re-run
+    refetchQueries: [{ query: FETCH_POSTS_QUERY }],
+  });
+  const [showEmojis, setShowEmojis] = useState(false);
+
+  useEffect(() => {
+    if (
+      response.called == true &&
+      response.loading == false &&
+      response.error == undefined
+    ) {
+    }
+  }, [response.data]);
   const showModal = () => {
     setIsModalVisible(true);
   };
 
   const handleOk = () => {
     setIsModalVisible(false);
+    if (PostBody == "") {
+      OpenErrorNotification(
+        "Please enter something in the post body",
+        "Post Body Empty"
+      );
+      return;
+    }
+    AddPost({
+      variables: {
+        body: PostBody,
+      },
+    });
     setPostBody("");
   };
 
@@ -31,14 +61,21 @@ const Home = () => {
       setUser(userInfo);
     }
   }, []);
+  useEffect(() => {
+    Posts = data?.getPosts;
+  }, [data]);
 
   if (!loading) {
-    Posts = data.getPosts;
+    Posts = data?.getPosts;
   }
-
-  const AddPost = () => {
-    showModal();
+  const addEmoji = (e) => {
+    let sym = e.unified.split("-");
+    let codesArray = [];
+    sym.forEach((el) => codesArray.push("0x" + el));
+    let emoji = String.fromCodePoint(...codesArray);
+    setPostBody(PostBody + emoji);
   };
+
   return (
     <div>
       {user?.id != null && user?.token != null && (
@@ -51,7 +88,7 @@ const Home = () => {
               shape="circle"
               icon={<RocketTwoTone style={{ fontSize: "32px" }} />}
               size={"large"}
-              onClick={AddPost}
+              onClick={showModal}
             />
           </Tooltip>
         </div>
@@ -65,18 +102,37 @@ const Home = () => {
       >
         <Input.Group compact>
           <Input.TextArea
-            style={{ width: "100%" }}
-            placeholder="Some Beautiful Post..."
+            style={{ width: "85%", marginRight: "10px" }}
+            placeholder="Such a wonderous place to share your thoughts"
             autoSize
             value={PostBody}
             onChange={(e) => setPostBody(e.target.value)}
           />
+          <Tooltip
+            placement="bottom"
+            title="emojis"
+            color="#2db7f5"
+            style={{
+              fontWeight: "800",
+            }}
+          >
+            <HeartTwoTone
+              style={{ fontSize: "26px" }}
+              twoToneColor="#E71D36"
+              onClick={() => setShowEmojis(!showEmojis)}
+            />
+          </Tooltip>
         </Input.Group>
+        {showEmojis && (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <Picker
+              onSelect={addEmoji}
+              style={{ marginRight: "30px", marginTop: "10px", height: "20%" }}
+            />
+          </div>
+        )}
       </Modal>
-      <Row
-        gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
-        style={{ flexWrap: "wrap" }}
-      >
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} wrap>
         {Posts?.map((post) => (
           <Col className="gutter-row" span={8} key={post.id}>
             <PostCard post={post} />
@@ -105,6 +161,26 @@ const FETCH_POSTS_QUERY = gql`
         username
         createdAt
         body
+      }
+      likeCount
+      commentCount
+    }
+  }
+`;
+const ADD_POST = gql`
+  mutation AddPost($body: String!) {
+    createPost(body: $body) {
+      id
+      body
+      comments {
+        id
+        username
+        createdAt
+        body
+      }
+      likes {
+        id
+        username
       }
     }
   }
