@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./Home.css";
 import EmojiTextarea from "react-emoji-textarea";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Row, Col, Button, Tooltip, Modal, Input } from "antd";
@@ -132,7 +133,11 @@ const Home = () => {
           </div>
         )}
       </Modal>
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} wrap>
+      <Row
+        gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+        wrap
+        className="d-flex-row"
+      >
         {Posts?.map((post) => (
           <Col className="gutter-row" span={8} key={post.id}>
             <PostCard post={post} />

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./PostCard.css";
 import moment from "moment";
 import { Skeleton, Card, Avatar, Tooltip, Divider, Button } from "antd";
 import {
@@ -91,8 +92,9 @@ const PostCard = ({ post }) => {
   };
   return (
     <Card
+      className="post-card"
       hoverable
-      style={{ minWidth: 300, marginTop: 16, cursor: "text" }}
+      style={{ width: "100%", marginTop: 16, cursor: "text" }}
       actions={[
         <LikeIcon post={post} />,
         <Tooltip
@@ -253,7 +255,7 @@ const PostCard = ({ post }) => {
               Add Comment
             </Divider>
             <InputEmoji
-              style={{ width: "50%" }}
+              style={{ width: "100%" }}
               value={comment}
               onChange={setComment}
               cleanOnEnter
