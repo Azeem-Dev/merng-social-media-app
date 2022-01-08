@@ -15,7 +15,6 @@ import CommentComponent from "../CommentComponent/CommentComponent";
 
 const { Meta } = Card;
 const PostCard = ({ post }) => {
-  const [currentPost, setCurrentPost] = useState(post);
   const [currentPostAllComments, setCurrentPostAllComments] = useState(
     post.comments
   );
@@ -26,9 +25,8 @@ const PostCard = ({ post }) => {
   const [user, setUser] = useState(undefined);
   const [allComments, setAllComments] = useState(undefined);
   const [PostComment, response] = useMutation(POST_COMMENT);
-  const [text, setText] = useState("");
 
-  function handleOnEnter(text) {
+  const handleOnEnter = (text) => {
     if (text == "") {
       OpenErrorNotification("Can't save an Empty Comment", "Empty Comment");
       return;
@@ -44,7 +42,7 @@ const PostCard = ({ post }) => {
       },
     });
     setComment("");
-  }
+  };
   useEffect(() => {
     setAllComments(currentPostAllComments?.slice(0, 3 * commentsControlLength));
   }, [commentsControlLength]);

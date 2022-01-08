@@ -1,12 +1,27 @@
 import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { Row, Col, Button, Tooltip } from "antd";
+import { Row, Col, Button, Tooltip, Modal, Input } from "antd";
 import { RocketTwoTone } from "@ant-design/icons";
 import PostCard from "../components/PostCard/PostCard";
 import { getUserDataFromMemory } from "../utils/getUserData";
 const Home = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [PostBody, setPostBody] = useState("");
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+    setPostBody("");
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setPostBody("");
+  };
+
   const [user, setUser] = useState(undefined);
-  // const [Posts, setPosts] = useState([]);
   let Posts = [];
   const { loading, data } = useQuery(FETCH_POSTS_QUERY);
 
@@ -20,10 +35,10 @@ const Home = () => {
   if (!loading) {
     Posts = data.getPosts;
   }
-  
-  const AddPost=()=>{
-    
-  }
+
+  const AddPost = () => {
+    showModal();
+  };
   return (
     <div>
       {user?.id != null && user?.token != null && (
@@ -42,6 +57,22 @@ const Home = () => {
         </div>
       )}
 
+      <Modal
+        title="ADD POST"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <Input.Group compact>
+          <Input.TextArea
+            style={{ width: "100%" }}
+            placeholder="Some Beautiful Post..."
+            autoSize
+            value={PostBody}
+            onChange={(e) => setPostBody(e.target.value)}
+          />
+        </Input.Group>
+      </Modal>
       <Row
         gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
         style={{ flexWrap: "wrap" }}
