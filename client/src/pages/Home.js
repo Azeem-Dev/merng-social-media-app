@@ -20,6 +20,10 @@ const Home = () => {
   if (!loading) {
     Posts = data.getPosts;
   }
+  
+  const AddPost=()=>{
+    
+  }
   return (
     <div>
       {user?.id != null && user?.token != null && (
@@ -32,6 +36,7 @@ const Home = () => {
               shape="circle"
               icon={<RocketTwoTone style={{ fontSize: "32px" }} />}
               size={"large"}
+              onClick={AddPost}
             />
           </Tooltip>
         </div>

@@ -1,37 +1,58 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Skeleton, Card, Avatar, Tooltip, Divider, Input, Button } from "antd";
-import { CommentOutlined, LikeOutlined, CodeOutlined } from "@ant-design/icons";
+import {
+  CommentOutlined,
+  LikeOutlined,
+  CodeOutlined,
+  CaretDownOutlined,
+} from "@ant-design/icons";
+import InputEmoji from "react-input-emoji";
 import { gql, useMutation } from "@apollo/client";
-import { convertDateToFormat } from "../../utils/dateFormatHelper";
 import { getUserDataFromMemory } from "../../utils/getUserData";
 import { OpenErrorNotification } from "../Notification/Notification";
 import CommentComponent from "../CommentComponent/CommentComponent";
 
 const { Meta } = Card;
 const PostCard = ({ post }) => {
+  const [currentPost, setCurrentPost] = useState(post);
+  const [currentPostAllComments, setCurrentPostAllComments] = useState(
+    post.comments
+  );
+  const [commentsControlLength, setCommentsControlLength] = useState(1);
   const [comment, setComment] = useState("");
   const [showComment, setshowComment] = useState(false);
   const [AddComment, setAddComment] = useState(false);
   const [user, setUser] = useState(undefined);
   const [allComments, setAllComments] = useState(undefined);
-
   const [PostComment, response] = useMutation(POST_COMMENT);
+  const [text, setText] = useState("");
 
+  function handleOnEnter(text) {
+    if (text == "") {
+      OpenErrorNotification("Can't save an Empty Comment", "Empty Comment");
+      return;
+    }
+    if (user.id == null && user.token == null) {
+      OpenErrorNotification("You are Not Logged In", "Please Login");
+      return;
+    }
+    PostComment({
+      variables: {
+        postId: post.id,
+        body: text,
+      },
+    });
+    setComment("");
+  }
+  useEffect(() => {
+    setAllComments(currentPostAllComments?.slice(0, 3 * commentsControlLength));
+  }, [commentsControlLength]);
   useEffect(() => {
     const userFromMemory = getUserDataFromMemory();
     setUser(userFromMemory);
     let userComments = [];
-    if (userFromMemory.id != null && userFromMemory.token != null) {
-      userComments = post.comments?.filter(
-        (comment) => comment.username == userFromMemory.username
-      );
-      if (userComments.length > 0 && userComments != undefined) {
-        setAllComments(userComments.slice(0, 3));
-      } else {
-        setAllComments(post.comments?.slice(0, 3));
-      }
-    }
+    setAllComments(currentPostAllComments?.slice(0, 3));
   }, []);
 
   useEffect(() => {
@@ -40,20 +61,16 @@ const PostCard = ({ post }) => {
       response.loading == false &&
       response.error == undefined
     ) {
-      if (
-        response.data.createComment.comments.find(
-          (c) => c.username == user?.username
-        )
-      ) {
-        setAllComments(
-          response.data.createComment.comments
-            .filter((c) => c.username == user?.username)
-            .slice(0, 3)
-        );
-      }
+      setCurrentPostAllComments(response.data.createComment.comments);
+      setAllComments(response.data.createComment.comments?.slice(0, 3));
     }
   }, [response.data]);
 
+  useEffect(() => {
+    if (!showComment) {
+      setAllComments(currentPostAllComments?.slice(0, 3));
+    }
+  }, [showComment]);
   const AddCommentFunction = () => {
     if (comment == "") {
       OpenErrorNotification("Can't save an Empty Comment", "Empty Comment");
@@ -150,6 +167,23 @@ const PostCard = ({ post }) => {
                 />
               );
             })}
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <Tooltip
+                placement="bottom"
+                title="more comments..."
+                color="#2db7f5"
+                style={{
+                  fontWeight: "800",
+                }}
+              >
+                <CaretDownOutlined
+                  style={{ color: "#2db7f5", fontSize: "20px" }}
+                  onClick={() =>
+                    setCommentsControlLength((oldLength) => oldLength + 1)
+                  }
+                />
+              </Tooltip>
+            </div>
           </>
         )}
 
@@ -164,17 +198,26 @@ const PostCard = ({ post }) => {
             >
               Add Comment
             </Divider>
-            <Input.Group compact style={{ width: "100%" }}>
-              <Input
-                style={{ width: "75%" }}
-                placeholder="Such a Inspiring Post"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
+            <InputEmoji
+              style={{ width: "50%" }}
+              value={comment}
+              onChange={setComment}
+              cleanOnEnter
+              onEnter={handleOnEnter}
+              placeholder="Such an inspiring post"
+            />
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Button type="primary" onClick={AddCommentFunction}>
                 Add
               </Button>
-            </Input.Group>
+            </div>
           </>
         )}
       </Skeleton>
